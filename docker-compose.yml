@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
+    ports:
+      - "5433:5432"
+
+  postgres-service:
+    build: ./postgres-service
+    ports:
+      - "8080:8081"
+    depends_on:
+      - postgres
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=testdb
+      - DB_HOST=postgres
+
+  mongo:
+    image: mongo:4.4
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./mongo-service/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+
+  mongo-service:
+    build: ./mongo-service
+    ports:
+      - "8081:8082"
+    depends_on:
+      - mongo
+    environment:
+      - DB_NAME=testdb
+      - DB_HOST=mongo
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "7777:7777"
+    depends_on:
+      - postgres-service
+      - mongo-service

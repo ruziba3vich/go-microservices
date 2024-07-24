@@ -1,6 +1,6 @@
 module github.com/ruziba3vich/postgres-service
 
-go 1.22.5
+go 1.22
 
 require (
 	github.com/gin-gonic/gin v1.10.0
